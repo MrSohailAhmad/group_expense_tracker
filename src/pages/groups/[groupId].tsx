@@ -6,7 +6,7 @@ type Expense = {
   description: string;
   amount: number;
   group_id: string;
-  created_at?: string; // Optional timestamp
+  created_at?: string;
 };
 export default function GroupExpenses() {
   const router = useRouter();
@@ -14,13 +14,6 @@ export default function GroupExpenses() {
   const [expenses, setExpenses] = useState<Expense[] | null>([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  type Expense = {
-    id: string;
-    description: string;
-    amount: number;
-    group_id: string;
-    created_at?: string; // Optional timestamp
-  };
 
   useEffect(() => {
     async function fetchExpenses() {
