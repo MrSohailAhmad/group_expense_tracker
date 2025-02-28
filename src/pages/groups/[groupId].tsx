@@ -14,25 +14,37 @@ export default function GroupExpenses() {
   const [expenses, setExpenses] = useState<Expense[] | null>([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-
+  async function fetchExpenses() {
+    const { data }: any = await supabase
+      .from("expenses")
+      .select("*")
+      .eq("group_id", groupId);
+    setExpenses(data || []);
+  }
   useEffect(() => {
-    async function fetchExpenses() {
-      const { data }: any = await supabase
-        .from("expenses")
-        .select("*")
-        .eq("group_id", groupId);
-      setExpenses(data || []);
-    }
     fetchExpenses();
+    // window.location.reload();
   }, [groupId]);
 
   const addExpense = async () => {
+    // Fetch additional user details from the "users" table
+    const { data: user } = await supabase.auth.getSession();
+
+    if (!user?.session?.user?.user_metadata?.email) {
+      router.push("/");
+    }
+
     await fetch(`/api/expenses/${groupId}`, {
       method: "POST",
-      body: JSON.stringify({ description, amount }),
+      body: JSON.stringify({
+        description,
+        amount,
+        user_id: user?.session?.user?.id,
+      }),
       headers: { "Content-Type": "application/json" },
     });
     setDescription("");
+    fetchExpenses();
     setAmount("");
   };
 

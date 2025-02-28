@@ -16,22 +16,18 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchGroups = async () => {
-      // Get the authenticated user
-      const { data: userData, error } = await supabase.auth.getUser();
-      if (error || !userData?.user) {
-        router.push("/"); // Redirect to login if not authenticated
-        return;
-      }
       // Fetch additional user details from the "users" table
       const { data: user } = await supabase.auth.getSession();
 
-      console.log("session", user?.session?.user?.user_metadata?.email);
       if (!user?.session?.user?.user_metadata?.email) {
         router.push("/");
       }
       setUser(user?.session?.user?.user_metadata || {});
 
-      const { data }: any = await supabase.from("groups").select("*");
+      const { data }: any = await supabase
+        .from("groups")
+        .select("*")
+        .eq("created_by", user?.session?.user?.id);
       setGroups(data || []);
     };
     fetchGroups();

@@ -18,6 +18,8 @@ export default async function handler(
 
   if (req.method === "POST") {
     const { description, amount, user_id } = req.body;
+
+    console.log("user_id", user_id);
     const { data, error } = await supabase
       .from("expenses")
       .insert([{ description, amount, user_id, group_id: groupId }]);

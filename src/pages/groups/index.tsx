@@ -8,9 +8,16 @@ export default function NewGroup() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleCreateGroup = async () => {
+    // Fetch additional user details from the "users" table
+    const { data: user } = await supabase.auth.getSession();
+
+    if (!user?.session?.user?.user_metadata?.email) {
+      router.push("/");
+    }
     setLoading(true);
-    const response = await supabase.from("groups").insert({ name: name });
-    console.log("response", response);
+    const response = await supabase
+      .from("groups")
+      .insert({ name: name, created_by: user?.session?.user?.id });
     if (response.status === 201) {
       setLoading(true);
       router.push("/dashboard");
